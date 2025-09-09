@@ -4,9 +4,10 @@ from flask import Flask, request, send_from_directory, render_template_string
 from llama_cpp import Llama
 import math
 import json
+from bs4 import BeautifulSoup
 
 app = Flask(__name__, static_url_path='/static', static_folder='static')
-
+md = markdown.Markdown(extensions=['meta'])
 # Load the sentence embedding model
 # Qwen/Qwen3-Embedding-0.6B-GGUF
 # Qwen3-Embedding-0.6B-Q8_0.gguf
@@ -22,8 +23,10 @@ def load_markdown_files_and_embeddings(directory):
             if file.endswith('.md'):
                 file_path = os.path.join(root, file)
                 with open(file_path, 'r') as f:
-                    content = f.read()
-                embedding = llm.embed(content, normalize=True)
+                    file_content = f.read()
+                html = md.convert(file_content)
+                soup = BeautifulSoup(html, 'html.parser')
+                embedding = llm.embed(soup.get_text(), normalize=True)
                 embeddings[file_path] = embedding
 
 # Load markdown files and embeddings on startup
