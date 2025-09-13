@@ -125,7 +125,10 @@
             for (let index = 0; index < result.length; index++) {
                 const element = result[index];
                 li = document.createElement("li");
-                li.innerText = element;
+                a = document.createElement("a");
+                li.append(a);
+                a.innerText = element;
+                a.setAttribute("href", "../"+element);
                 ul.append(li);
             }
         }
